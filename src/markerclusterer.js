@@ -1059,6 +1059,24 @@ ClusterIcon.prototype.triggerClusterClick = function(event) {
   }
 };
 
+function getMarkersCost(markers){
+  var sum = 0;
+  var ETA = 0;
+  var currency;
+  for(var i=0;i<markers.length;++i){
+    if(markers[i].title !== null){
+      markers[i]['infoTitle']=markers[i].title;
+      markers[i]['title']=null;
+    }
+    var [markerSum, markerETA, currency] = markers[i]['infoTitle'].split(',');
+    sum+=parseFloat(Number(markerSum) );
+    ETA+=parseFloat(Number(markerETA));
+  }
+  var avg = sum / markers.length;
+  var avgETA = ETA / markers.length;
+  let str = 'Total\u00a0sales:\u00a0'+sum.toFixed(2)+currency+' Average\u00a0sales:\u00a0'+avg.toFixed(2)+currency+' Average\u00a0Deliverd:\u00a0'+avgETA.toFixed(2)+'Min'
+  return str;
+}
 
 /**
  * Adding the cluster icon to the dom.
@@ -1070,6 +1088,9 @@ ClusterIcon.prototype.onAdd = function() {
     var pos = this.getPosFromLatLng_(this.center_);
     this.div_.style.cssText = this.createCss(pos);
     this.div_.innerHTML = this.sums_.text;
+    let title = getMarkersCost(this.cluster_.markers_);
+    this.div_.setAttribute('data-title', title);
+    this.div_.setAttribute('data-toggle', "tooltip");
   }
 
   var panes = this.getPanes();
